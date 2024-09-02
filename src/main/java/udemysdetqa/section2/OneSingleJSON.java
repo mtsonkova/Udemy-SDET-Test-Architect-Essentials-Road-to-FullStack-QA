@@ -1,15 +1,16 @@
 package udemysdetqa.section2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.cj.jdbc.Driver;
-import com.mysql.cj.xdevapi.SqlStatement;
+import com.google.gson.Gson;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class JSONtoJava {
+public class OneSingleJSON {
     public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection connection = null;
@@ -21,6 +22,8 @@ public class JSONtoJava {
         CustomerDetails customerDetails;
         ArrayList<CustomerDetails> customerDetailsArr = new ArrayList<CustomerDetails>();
         String jsonPath;
+
+        JSONArray jsonArray = new JSONArray();
 
         while(resultSet.next()) {
             customerDetails = new CustomerDetails();
@@ -34,12 +37,19 @@ public class JSONtoJava {
         }
 
         for(int i = 0; i < customerDetailsArr.size(); i++) {
-           jsonPath = System.getProperty("user.dir") + "\\JsonFiles\\customerInfo" + i + ".json";
+            jsonPath = System.getProperty("user.dir") + "\\JsonFiles\\customerInfo.json";
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writeValue(new File(jsonPath), customerDetailsArr);
+
+            Gson gsonObj = new Gson();
+            String jsonAsString = gsonObj.toJson(customerDetailsArr.get(i));
+            jsonArray.add(jsonAsString);
         }
 
+        //creating json string from java object
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", jsonArray);
 
 
 
