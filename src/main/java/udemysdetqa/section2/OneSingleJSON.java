@@ -2,6 +2,7 @@ package udemysdetqa.section2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -50,8 +51,10 @@ public class OneSingleJSON {
         //creating json string from java object
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("data", jsonArray);
-
-
+        String unsecapeString = StringEscapeUtils.unescapeJava(jsonObject.toJSONString());
+        String string1 = unsecapeString.replace("\"{", "{");
+        String finalString = string1.replace("}\"", "}");
+        System.out.println(finalString);
 
         connection.close();
     }
