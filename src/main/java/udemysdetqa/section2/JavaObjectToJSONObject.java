@@ -15,7 +15,7 @@ public class JavaObjectToJSONObject {
 
         //object of statement class will help us to execute queries;
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("select customerNumber, customerName, contactLastName, contactFirstName, city, country from customers limit 5;");
+        ResultSet resultSet = statement.executeQuery("select customerNumber, customerName, contactLastName, contactFirstName, city, country from customers limit 1;");
         CustomerDetails customerDetails;
         ArrayList<CustomerDetails> customerDetailsArr = new ArrayList<CustomerDetails>();
         String jsonPath;
