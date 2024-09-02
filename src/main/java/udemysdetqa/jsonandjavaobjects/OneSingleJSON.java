@@ -1,15 +1,18 @@
-package udemysdetqa.section2;
+package udemysdetqa.jsonandjavaobjects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.cj.jdbc.Driver;
-import com.mysql.cj.xdevapi.SqlStatement;
+import com.google.gson.Gson;
+import org.apache.commons.text.StringEscapeUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class JSONtoJava {
+public class OneSingleJSON {
     public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection connection = null;
@@ -20,7 +23,8 @@ public class JSONtoJava {
         ResultSet resultSet = statement.executeQuery("select customerNumber, customerName, contactLastName, contactFirstName, city, country from customers limit 5;");
         CustomerDetails customerDetails;
         ArrayList<CustomerDetails> customerDetailsArr = new ArrayList<CustomerDetails>();
-        String jsonPath;
+        String jsonPath = System.getProperty("user.dir") + "\\JsonFiles";;
+        JSONArray jsonArray = new JSONArray();
 
         while(resultSet.next()) {
             customerDetails = new CustomerDetails();
@@ -34,14 +38,24 @@ public class JSONtoJava {
         }
 
         for(int i = 0; i < customerDetailsArr.size(); i++) {
-           jsonPath = System.getProperty("user.dir") + "\\JsonFiles\\customerInfo" + i + ".json";
-
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(new File(jsonPath), customerDetailsArr);
+            objectMapper.writeValue(new File(jsonPath + "\\customerInfo.json"), customerDetailsArr);
+
+            Gson gsonObj = new Gson();
+            String jsonAsString = gsonObj.toJson(customerDetailsArr.get(i));
+            jsonArray.add(jsonAsString);
         }
 
+        //creating json string from java object
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", jsonArray);
+        String unsecapeString = StringEscapeUtils.unescapeJava(jsonObject.toJSONString());
+        String string1 = unsecapeString.replace("\"{", "{");
+        String finalString = string1.replace("}\"", "}");
 
-
+        try(FileWriter file = new FileWriter(jsonPath + "\\SingleJson.json")) {
+            file.write(finalString);
+        }
 
         connection.close();
     }

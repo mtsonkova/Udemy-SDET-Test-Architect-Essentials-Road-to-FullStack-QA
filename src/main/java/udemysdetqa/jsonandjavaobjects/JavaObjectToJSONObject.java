@@ -1,4 +1,4 @@
-package udemysdetqa.section2;
+package udemysdetqa.jsonandjavaobjects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
