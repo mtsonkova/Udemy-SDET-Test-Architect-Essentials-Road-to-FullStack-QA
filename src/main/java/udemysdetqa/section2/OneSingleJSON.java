@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,8 +23,7 @@ public class OneSingleJSON {
         ResultSet resultSet = statement.executeQuery("select customerNumber, customerName, contactLastName, contactFirstName, city, country from customers limit 5;");
         CustomerDetails customerDetails;
         ArrayList<CustomerDetails> customerDetailsArr = new ArrayList<CustomerDetails>();
-        String jsonPath;
-
+        String jsonPath = System.getProperty("user.dir") + "\\JsonFiles";;
         JSONArray jsonArray = new JSONArray();
 
         while(resultSet.next()) {
@@ -38,10 +38,8 @@ public class OneSingleJSON {
         }
 
         for(int i = 0; i < customerDetailsArr.size(); i++) {
-            jsonPath = System.getProperty("user.dir") + "\\JsonFiles\\customerInfo.json";
-
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(new File(jsonPath), customerDetailsArr);
+            objectMapper.writeValue(new File(jsonPath + "\\customerInfo.json"), customerDetailsArr);
 
             Gson gsonObj = new Gson();
             String jsonAsString = gsonObj.toJson(customerDetailsArr.get(i));
@@ -54,7 +52,10 @@ public class OneSingleJSON {
         String unsecapeString = StringEscapeUtils.unescapeJava(jsonObject.toJSONString());
         String string1 = unsecapeString.replace("\"{", "{");
         String finalString = string1.replace("}\"", "}");
-        System.out.println(finalString);
+
+        try(FileWriter file = new FileWriter(jsonPath + "\\SingleJson.json")) {
+            file.write(finalString);
+        }
 
         connection.close();
     }
